@@ -1,0 +1,51 @@
+--- ./sha1.cpp	2012-05-25 10:10:20.000000000 -0400
++++ /Volumes/Macintosh_Data/cbell/Documents/Arduino/libraries/sha1/sha1.cpp	2012-05-25 10:07:38.000000000 -0400
+@@ -126,38 +126,4 @@
+ #define HMAC_IPAD 0x36
+ #define HMAC_OPAD 0x5c
+ 
+-
+-
+-void Sha1Class::initHmac(const uint8_t* key, int keyLength) {
+-  uint8_t i;
+-  memset(keyBuffer,0,BLOCK_LENGTH);
+-  if (keyLength > BLOCK_LENGTH) {
+-    // Hash long keys
+-    init();
+-    for (;keyLength--;) write(*key++);
+-    memcpy(keyBuffer,result(),HASH_LENGTH);
+-  } else {
+-    // Block length keys are used as is
+-    memcpy(keyBuffer,key,keyLength);
+-  }
+-  //for (i=0; i<BLOCK_LENGTH; i++) debugHH(keyBuffer[i]);
+-  // Start inner hash
+-  init();
+-  for (i=0; i<BLOCK_LENGTH; i++) {
+-    write(keyBuffer[i] ^ HMAC_IPAD);
+-  }
+-}
+-
+-uint8_t* Sha1Class::resultHmac(void) {
+-  uint8_t i;
+-    // Complete inner hash
+-  memcpy(innerHash,result(),HASH_LENGTH);
+-  // now innerHash[] contains H((K0 xor ipad)||text)
+-
+-  // Calculate outer hash
+-  init();
+-  for (i=0; i<BLOCK_LENGTH; i++) write(keyBuffer[i] ^ HMAC_OPAD);
+-  for (i=0; i<HASH_LENGTH; i++) write(innerHash[i]);
+-  return result();
+-}
+ Sha1Class Sha1;
+--- ./sha1.h	2012-05-25 10:10:20.000000000 -0400
++++ /Volumes/Macintosh_Data/cbell/Documents/Arduino/libraries/sha1/sha1.h	2012-05-25 10:07:06.000000000 -0400
+@@ -22,7 +22,6 @@
+     void init(void);
+     void initHmac(const uint8_t* secret, int secretLength);
+     uint8_t* result(void);
+-    uint8_t* resultHmac(void);
+     virtual size_t write(uint8_t);
+     virtual size_t write(uint8_t* data, int length);
+     using Print::write;
